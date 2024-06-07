@@ -1,0 +1,78 @@
+
+### RS 
+nano nginx-replicaset.yaml
+    ls
+	
+	kubectl api-resources | grep pods
+	
+ kubectl apply -f nginx-replicaset.yaml
+ kubectl get rs
+  
+  kubectl get po
+
+kubectl delete po <podname>
+
+minikube node add --worker -p local-cluster
+
+ minikube node delete local-cluster-m02 -p local-cluster
+ 
+ kubectl get pod -o wide
+
+
+##### Deployments 
+kubectl delete all --all
+
+kubectl get all
+
+
+ kubectl apply -f nginx-deployment.yaml
+kubectl get all
+
+kubectl get pods --show-labels
+
+#show Scale down example by changing number of replicase in yaml file (From 3 to 2)
+kubectl apply -f nginx-deployment.yaml
+
+ kubectl get all
+ 
+ #Scale using scale command instead of updating yaml file
+  kubectl scale --replicas=5 deployment/nginx-deployment
+  kubectl get all
+
+#show age of pods
+ kubectl get po 
+
+
+# lets say I have to update the version of the application
+#nano deployment file and change label from image:<> to image: nginx:1.21 
+
+ kubectl apply -f nginx-deployment.yaml
+kubectl get all 
+# show that new replicaset will be created (to support rollback)
+
+#Show same example using kubectl command instead of updating yaml file
+kubectl set image deployment/nginx-deployment nginx-container=1.20
+
+
+ kubectl get all
+ # show that new replicaset will be created (to support rollback)
+ 
+ #Describe pod and show the version updated
+ Kubcetl describe <podname>
+
+# look for   Image:          nginx:1.21 and showcase
+
+kubectl rollout history deployment/nginx-deployment
+ 
+  kubectl set image deployment/nginx-deployment nginx-container=1.20 --record=true
+
+# add to YAML and reapply
+annotations:
+    kubernetes.io/change-cause: "Updating to alipine version"
+
+kubectl rollout history deployment/nginx-deployment
+
+#rollback to specific version
+ kubectl rollout undo deployment/nginx-deployment --to-revision=1
+
+kubectl rollout status deployment/nginx-deployment

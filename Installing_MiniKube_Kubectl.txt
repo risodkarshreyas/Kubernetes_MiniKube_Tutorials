@@ -1,0 +1,116 @@
+
+## Install dependencies and updates
+sudo yum update
+
+#Install docker
+sudo dnf config-manager --add-repo=https://download.docker.com/linux/rhel/docker-ce.repo 
+sudo dnf install docker-ce docker-ce-cli containerd.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+docker --version
+
+#Download Kubernetes and dependencies
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl
+curl -LO "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl.sha256"
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+
+#Install Kuberentes
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key
+EOF
+
+#install Kubectl
+sudo yum install -y kubectl
+kubectl version --client
+
+kubectl version --client --output=yaml
+kubectl cluster-info
+kubectl cluster-info dump
+   
+## Install Minkube   
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+sudo rpm -Uvh minikube-latest.x86_64.rpm
+
+# Open the SSSD configuration file
+sudo nano /etc/sssd/sssd.conf
+
+# Add the following configuration (adjust as needed)
+[sssd]
+services = nss, pam
+config_file_version = 2
+domains = LOCAL
+
+[nss]
+filter_groups = root
+filter_users = root
+
+[pam]
+
+[domain/LOCAL]
+id_provider = files
+
+
+# Set the correct permissions for the configuration file
+sudo chmod 600 /etc/sssd/sssd.conf
+sudo chown root:root /etc/sssd/sssd.conf
+
+# Start the SSSD service
+sudo systemctl start sssd
+
+# Enable the SSSD service to start on boot
+sudo systemctl enable sssd
+
+# Check the status of the SSSD service
+sudo systemctl status sssd
+
+df -h
+rm -rf /home/testuser/.minikube/logs/*
+
+df -h 
+nmount Filesystem (if needed):
+If /dev/mapper/rootvg-homelv is in use, unmount it with umount /path/to/filesystem.
+
+#Resize Logical Volume:
+Use lvresize --size +10G /dev/mapper/rootvg-homelv to increase the logical volume size by 10GB (adjust size as needed).
+
+#Resize Filesystem:
+#Resize the filesystem depending on type:
+
+For ext4: resize2fs /dev/mapper/rootvg-homelv
+For XFS: xfs_growfs /dev/mapper/rootvg-homelv
+#Remount Filesystem (if unmounted earlier):
+#Remount the filesystem with mount /path/to/filesystem.
+
+#Verify Changes:
+Confirm the changes with df -h.
+   
+useradd testuser
+usermod -aG docker testuser
+
+#Login as testuser
+su testuser
+
+#start Kuberentes cluster
+minikube start --driver=docker
+
+#Check cluster status
+kubectl cluster-info
+
+
+#Tutorials Kubernetes 101
+https://minikube.sigs.k8s.io/docs/tutorials/kubernetes_101/module4/
+https://minikube.sigs.k8s.io/docs/tutorials/kubernetes_101/module5/
+https://minikube.sigs.k8s.io/docs/tutorials/kubernetes_101/module6/
+
+minikube start -p local-cluster
+
+minikube start --node 2 -p local-cluster --driver=docker
+

@@ -1,0 +1,47 @@
+#########
+kubectl run nginx-pod --image=nginx
+
+
+cd testuser/
+touch nginx-pod.yaml
+nano nginx-pod.yaml
+ 
+kubectl api-resources | grep pods
+
+kubectl apply -f nginx-pod.yaml
+
+kubectl get pods
+
+kubectl delete pod nginx-pod1
+
+ kubectl apply -f nginx-pod.yaml
+ 
+ #Filter pod based on labels 
+  kubectl get pods -l team=integrations
+  kubectl get pods -l team=integrations,app=todo
+
+# get more information on the pod
+kubectl get pod -o wide
+kubectl describe pod nginx-pod1
+
+#exec into the pod 
+kubectl exec -it nginx-pod1 -- bash
+ls
+
+#exit into a container within pod 
+kubectl exec -it nginx-pod1 -c nginx-container -- bash
+exit
+
+#port forwarding demo
+kubectl port-forward nginx-pod1 8083:80
+
+duplicate session and curl http://localhost:8083 to demonstrate
+
+#Check logs of pod
+kubectl logs nginx-pod1
+
+#delete pod using yaml file
+ kubectl delete -f nginx-pod.yaml
+ 
+ #delete using pod name
+ kubectl delete pod  nginx-pod

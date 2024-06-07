@@ -1,0 +1,40 @@
+kubectl api-resources | grep service
+
+# explain yaml structure , default service type is cluster IP
+
+nano nginx-service.yaml
+
+kubectl get svc
+
+ curl <IP>:8082
+ 
+  kubectl exec -it <Podname> -- sh
+
+curl <IP>:8082 
+# now it works
+
+curl <service>:8082 
+curl nginx-service:8082 
+
+i=1 
+while [ "$i" -le 20 ]; do
+curl nginx-service:8082;
+i=$(( i + 1))
+done
+
+kubeclt logs <pod1> -f
+
+kubeclt logs <pod2>-f
+
+ kubectl get endpoints
+ 
+ kubectl describe service/nginx-service
+ 
+ # change to node port 
+ in yaml add type: NodePort
+ Nodeport:
+ 
+ #nodeport value can be only 30000-32767
+ 
+ # change to loadbalancer
+  in yaml add type: Database
